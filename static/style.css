@@ -1,0 +1,206 @@
+/* GLOBAL */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f3f4f6;
+    color: #111827;
+}
+
+/* NAVBAR */
+.navbar {
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    color: white;
+}
+
+.navbar h2 {
+    margin: 0;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* HERO SECTION */
+.hero {
+    height: 90vh;
+    background: url('/static/restaurant.jpg') center/cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1000px;
+    margin: -80px auto 40px auto;
+    padding: 20px;
+}
+
+/* CARD (GLASS STYLE) */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* HEADINGS */
+h2 {
+    margin-bottom: 15px;
+}
+
+/* INPUT FIELDS */
+input {
+    padding: 12px;
+    margin: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 180px;
+    transition: 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* BUTTON */
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff7a18, #ff3d00);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+/* CHAT UI */
+#chatBox {
+    margin-top: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.user {
+    background: #c7f9cc;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px;
+    text-align: right;
+}
+
+.bot {
+    background: #e5e5e5;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+/* FLOOR GRID */
+#floor {
+    display: grid;
+    grid-template-columns: repeat(4, 120px);
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.table {
+    height: 80px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+}
+
+/* TABLE STATUS */
+.free {
+    background: #22c55e;
+}
+
+.reserved {
+    background: #ef4444;
+}
+
+/* RESERVATION CARDS */
+.res-card {
+    background: white;
+    padding: 15px;
+    margin: 12px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.2s;
+}
+
+.res-card:hover {
+    transform: scale(1.01);
+}
+
+/* TEXT STYLING */
+.res-card h3 {
+    margin: 0 0 5px 0;
+}
+
+.res-card p {
+    margin: 4px 0;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+
+    input {
+        width: 100%;
+    }
+
+    .container {
+        margin-top: -40px;
+    }
+
+    #floor {
+        grid-template-columns: repeat(2, 120px);
+    }
+}

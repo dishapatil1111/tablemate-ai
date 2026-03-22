@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+<h2>🍽 TableMate Admin</h2>
+<a href="/">Home</a>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero" style="height:300px">
+<div class="hero-content">
+<h1>Admin Dashboard</h1>
+<p>Manage reservations & tables</p>
+</div>
+</section>
+
+<div class="container">
+
+<!-- FLOOR CARD -->
+<div class="card">
+<h2>Restaurant Floor</h2>
+<div id="floor"></div>
+</div>
+
+<!-- RESERVATIONS CARD -->
+<div class="card">
+<h2>Reservations</h2>
+<div id="reservations"></div>
+</div>
+
+</div>
+
+<script>
+
+async function load(){
+const res=await fetch("/reservations")
+const data=await res.json()
+
+let bookedTables=[]
+data.forEach(r=>bookedTables.push(r.table_number))
+
+drawFloor(bookedTables)
+drawReservations(data)
+}
+
+function drawFloor(booked){
+let html=""
+
+for(let i=1;i<=8;i++){
+let status=booked.includes(i) ? "table reserved":"table free"
+html+=`<div class="${status}">T${i}</div>`
+}
+
+document.getElementById("floor").innerHTML=html
+}
+
+function drawReservations(data){
+let html=""
+
+if(data.length === 0){
+html = "<p>No reservations yet.</p>"
+}
+
+data.forEach(r=>{
+html+=`
+<div class="res-card">
+<h3>${r.name}</h3>
+<p>👥 Guests: ${r.guests}</p>
+<p>📅 ${r.date}</p>
+<p>⏰ ${r.time}</p>
+<p>🍽 Table ${r.table_number}</p>
+<button onclick="cancel(${r.id})">Cancel</button>
+</div>
+`
+})
+
+document.getElementById("reservations").innerHTML=html
+}
+
+async function cancel(id){
+await fetch("/cancel/"+id)
+load()
+}
+
+load()
+
+</script>
+
+</body>
+</html>
