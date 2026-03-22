@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 import os
 
@@ -17,10 +18,22 @@ templates = Jinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# -------------------- AUTH --------------------
+security = HTTPBasic()
 
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != "admin" or credentials.password != "admin123":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+# -------------------- MODEL --------------------
 class Message(BaseModel):
     message: str
 
+# -------------------- ROUTES --------------------
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -33,8 +46,12 @@ async def chat(msg: Message):
     return {"response": response}
 
 
+# 🔐 SECURED ADMIN ROUTE
 @app.get("/admin", response_class=HTMLResponse)
-async def admin(request: Request):
+async def admin(
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(verify_admin)
+):
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
