@@ -61,23 +61,9 @@ async def admin(
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
-# ✅ FIXED: Convert DB tuples → dictionary
 @app.get("/reservations")
 async def reservations():
-    data = get_all_reservations()
-
-    result = []
-    for r in data:
-        result.append({
-            "id": r[0],
-            "name": r[1],
-            "guests": r[2],
-            "date": r[3],
-            "time": r[4],
-            "table_number": r[5]
-        })
-
-    return result
+    return get_all_reservations()
 
 
 @app.get("/cancel/{reservation_id}")
