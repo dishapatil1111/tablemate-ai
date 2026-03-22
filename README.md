@@ -8,6 +8,10 @@ This project was built to explore how AI can be integrated into real-world appli
 
 https://tablemate-ai.onrender.com
 
+# Preview
+
+![App Screenshot](restaurant ai ss1.PNG)
+
 
 # What it can do
 
@@ -49,8 +53,8 @@ Create a `.env` file and add:
 
 ```
 GROQ_API_KEY=your_api_key
-ADMIN_USER=***
-ADMIN_PASS=***
+ADMIN_USER=admin
+ADMIN_PASS=admin123 
 ```
 
 Run the app:
