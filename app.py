@@ -12,17 +12,23 @@ from tools import cancel_reservation
 
 app = FastAPI()
 
+# Create DB
 create_database()
 
+# Templates
 templates = Jinja2Templates(directory="templates")
 
+# Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # -------------------- AUTH --------------------
 security = HTTPBasic()
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    if credentials.username != "admin" or credentials.password != "admin123":
+    admin_user = os.getenv("ADMIN_USER")
+    admin_pass = os.getenv("ADMIN_PASS")
+
+    if credentials.username != admin_user or credentials.password != admin_pass:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized",
@@ -46,7 +52,7 @@ async def chat(msg: Message):
     return {"response": response}
 
 
-# 🔐 SECURED ADMIN ROUTE
+# 🔐 SECURED ADMIN PAGE
 @app.get("/admin", response_class=HTMLResponse)
 async def admin(
     request: Request,
@@ -55,9 +61,23 @@ async def admin(
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
+# ✅ FIXED: Convert DB tuples → dictionary
 @app.get("/reservations")
 async def reservations():
-    return get_all_reservations()
+    data = get_all_reservations()
+
+    result = []
+    for r in data:
+        result.append({
+            "id": r[0],
+            "name": r[1],
+            "guests": r[2],
+            "date": r[3],
+            "time": r[4],
+            "table_number": r[5]
+        })
+
+    return result
 
 
 @app.get("/cancel/{reservation_id}")
@@ -66,7 +86,7 @@ async def cancel(reservation_id: int):
     return {"status": "ok"}
 
 
-# 👇 IMPORTANT FOR RENDER
+# 👇 FOR RENDER
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
