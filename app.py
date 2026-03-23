@@ -25,8 +25,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 security = HTTPBasic()
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    admin_user = os.getenv("ADMIN_USER")
-    admin_pass = os.getenv("ADMIN_PASS")
+    # ✅ ENV fallback fix
+    admin_user = os.getenv("ADMIN_USER", "admin")
+    admin_pass = os.getenv("ADMIN_PASS", "admin123")
 
     if credentials.username != admin_user or credentials.password != admin_pass:
         raise HTTPException(
@@ -52,7 +53,7 @@ async def chat(msg: Message):
     return {"response": response}
 
 
-# 🔐 ADMIN PAGE
+# 🔐 ADMIN PAGE (SECURED)
 @app.get("/admin", response_class=HTMLResponse)
 async def admin(
     request: Request,
@@ -61,7 +62,7 @@ async def admin(
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
-# ✅ CORRECT (no double conversion)
+# ✅ Correct reservations (NO double conversion)
 @app.get("/reservations")
 async def reservations():
     return get_all_reservations()
@@ -71,15 +72,6 @@ async def reservations():
 async def cancel(reservation_id: int):
     cancel_reservation(reservation_id)
     return {"status": "ok"}
-
-
-# 🧹 TEMP FIX — RESET DATABASE (REMOVE LATER)
-@app.get("/reset-db")
-def reset_db():
-    if os.path.exists("restaurant.db"):
-        os.remove("restaurant.db")
-    create_database()
-    return {"status": "db reset"}
 
 
 # 👇 FOR RENDER
