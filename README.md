@@ -31,6 +31,12 @@ https://tablemate-ai.onrender.com
 
 ---
 
+##  System Flow
+
+User → Frontend → FastAPI → AI Agent → Database → Admin Dashboard
+
+
+
 ##  What it can do
 
 - Book tables using natural language  
