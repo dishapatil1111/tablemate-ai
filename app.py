@@ -11,15 +11,19 @@ from tools import cancel_reservation
 
 app = FastAPI()
 
-# ✅ Create DB on startup
+# ✅ Create database
 create_database()
 
-# ✅ Fix template path (important for Render)
+# ✅ Fix paths (important for Render)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
-# ✅ Static files
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static"
+)
 
 
 # ✅ Request model
@@ -31,28 +35,28 @@ class Message(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        name="index.html",
-        context={"request": request}
+        "index.html",
+        {"request": request}
     )
 
 
-# ✅ Chat endpoint (AI agent)
+# ✅ Chat endpoint
 @app.post("/chat")
 async def chat(msg: Message):
     response = run_agent(msg.message)
     return {"response": response}
 
 
-# ✅ Admin dashboard
+# ✅ Admin page
 @app.get("/admin", response_class=HTMLResponse)
 async def admin(request: Request):
     return templates.TemplateResponse(
-        name="admin.html",
-        context={"request": request}
+        "admin.html",
+        {"request": request}
     )
 
 
-# ✅ Get all reservations
+# ✅ Get reservations
 @app.get("/reservations")
 async def reservations():
     return get_all_reservations()
@@ -65,7 +69,7 @@ async def cancel(reservation_id: int):
     return {"status": "ok"}
 
 
-# ✅ For Render deployment
+# ✅ Run app (Render compatible)
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
