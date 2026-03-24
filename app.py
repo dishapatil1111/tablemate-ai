@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, status
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 import os
 
@@ -12,35 +11,16 @@ from tools import cancel_reservation
 
 app = FastAPI()
 
-# Create DB
 create_database()
 
-# Templates
 templates = Jinja2Templates(directory="templates")
 
-# Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# -------------------- AUTH --------------------
-security = HTTPBasic()
 
-def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    # ✅ ENV fallback fix
-    admin_user = os.getenv("ADMIN_USER", "admin")
-    admin_pass = os.getenv("ADMIN_PASS", "admin123")
-
-    if credentials.username != admin_user or credentials.password != admin_pass:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-
-# -------------------- MODEL --------------------
 class Message(BaseModel):
     message: str
 
-# -------------------- ROUTES --------------------
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -53,16 +33,11 @@ async def chat(msg: Message):
     return {"response": response}
 
 
-# 🔐 ADMIN PAGE (SECURED)
 @app.get("/admin", response_class=HTMLResponse)
-async def admin(
-    request: Request,
-    credentials: HTTPBasicCredentials = Depends(verify_admin)
-):
+async def admin(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
-# ✅ Correct reservations (NO double conversion)
 @app.get("/reservations")
 async def reservations():
     return get_all_reservations()
@@ -74,7 +49,7 @@ async def cancel(reservation_id: int):
     return {"status": "ok"}
 
 
-# 👇 FOR RENDER
+# 👇 IMPORTANT FOR RENDER
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
